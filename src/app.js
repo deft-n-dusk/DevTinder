@@ -3,84 +3,86 @@ const connectDB = require("./config/database.js")
 
 const app = express();
 
-const User = require("./models/user.js")
+
 app.use(express.json());
 
 
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+const jwt = require("jsonwebtoken");
 
-app.post("/signup", async (req, res) => {
-    const user = new User(req.body);
+const authRouter = require("./routes/authRouter.js");
+const profileRouter = require("./routes/profileRouter.js");
+const requestsRouter = require("./routes/requestsRouter.js");
 
-    try{
-        
-        await user.save();
-        res.send("User added successfully");
-    }
-    catch (err){
-        res.status(400).send("Error saving the user:" + err.message);
-    }
-})
+
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestsRouter);
+
+
+
 
 
 
 //Find user by email
-app.get("/user", async(req, res) => {
-    const UsersEmail = req.body.emailId;
+// app.get("/user", userAuth, async(req, res) => {
+//     const UsersEmail = req.body.emailId;
 
-    try{
-        const users = await User.find({emailId : UsersEmail});
-        if(users.length === 0){
-            res.send("No users found");
-        }
-        else{
-            res.send(users);
-        }
-    }
-    catch (err){
-        res.status(400).send("Something went wrong");
-    }
+//     try{
+//         const users = await User.find({emailId : UsersEmail});
+//         if(users.length === 0){
+//             res.send("No users found");
+//         }
+//         else{
+//             res.send(users);
+//         }
+//     }
+//     catch (err){
+//         res.status(400).send("Something went wrong");
+//     }
     
 
-})
+// })
 
-//Delete user by Id
-app.delete("/user", async(req, res) => {
-    const userId = req.body.userId;
+// //Delete user by Id
+// app.delete("/user", async(req, res) => {
+//     const userId = req.body.userId;
 
-    try{
-        const user = await User.findByIdAndDelete(userId);
-        res.send("User deleted successfully");
-    }
-    catch (err){
-        res.status(400).send("Not deleted");
-    }
-})
+//     try{
+//         const user = await User.findByIdAndDelete(userId);
+//         res.send("User deleted successfully");
+//     }
+//     catch (err){
+//         res.status(400).send("Not deleted");
+//     }
+// })
 
-//Update User data
-app.patch("/user/:userId", async(req, res) => {
-    const userId = req.params?.userId;
-    const data = req.body;
+// //Update User data
+// app.patch("/user/:userId", async(req, res) => {
+//     const userId = req.params?.userId;
+//     const data = req.body;
 
-    try{
-        const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
-        const isAllowedUpdates = Object.keys(data).every((k) => 
-            ALLOWED_UPDATES.includes(k));
-        if(!isAllowedUpdates){
-            throw new Error("Update not allowed!");
-        }
-        if(data?.skills.length > 20){
-            throw new Error("Skills should be under 20");
-        }
-        const user = await User.findByIdAndUpdate(userId, data, {
-            runValidators : true,
-        });
+//     try{
+//         const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+//         const isAllowedUpdates = Object.keys(data).every((k) => 
+//             ALLOWED_UPDATES.includes(k));
+//         if(!isAllowedUpdates){
+//             throw new Error("Update not allowed!");
+//         }
+//         if(data?.skills.length > 20){
+//             throw new Error("Skills should be under 20");
+//         }
+//         const user = await User.findByIdAndUpdate(userId, data, {
+//             runValidators : true,
+//         });
         
-        res.send("User updated successfully");
-    }
-    catch(err){
-        res.status(400).send("not updated");
-    }
-})
+//         res.send("User updated successfully");
+//     }
+//     catch(err){
+//         res.status(400).send("not updated");
+//     }
+// })
 
 
 
