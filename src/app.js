@@ -14,11 +14,13 @@ const jwt = require("jsonwebtoken");
 const authRouter = require("./routes/authRouter.js");
 const profileRouter = require("./routes/profileRouter.js");
 const requestsRouter = require("./routes/requestsRouter.js");
+const userRouter = require("./routes/userRouter.js");
 
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestsRouter);
+app.use("/", userRouter);
 
 
 
